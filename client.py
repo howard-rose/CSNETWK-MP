@@ -146,7 +146,7 @@ class Client:
         file = open(f'{self.filepath}/{filename}', 'rb')
 
         # Send the file
-        self.send(f'STORE {filename} {file.read()}'.encode())
+        self.send(f'STORE {filename} '.encode() + file.read())
 
         # Close the file
         file.close()
