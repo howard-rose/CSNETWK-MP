@@ -100,6 +100,8 @@ class Client:
         # Set the connection to None
         self.connection = None
 
+        return True
+
     def register(self, username):
         """
         This method registers the client to the server.
