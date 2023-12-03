@@ -9,6 +9,33 @@ This file instantiates a Server object and starts it.
 
 from server import Server
 
+
+def handle_request(req_string):
+    # Server must handle the ff. request strings:
+    # REGISTER {username}
+    # GET {filename}
+    # STORE {filename} {content}
+    # DIR
+
+    req_list = req_string.split()
+    req, args = req_list[0].decode(), req_list[1:]
+
+    print('=====')
+    print('Received request:', req, args)
+
+    match req, args:
+        case 'REGISTER', [username]:
+            server.register(username)
+        case 'GET', [filename]:
+            server.get(filename)
+        case 'STORE', [filename, content]:
+            server.store(filename, content)
+        case 'DIR', []:
+            server.dir()
+        case _:
+            print('Invalid request')
+            server.send('Invalid request'.encode())
+
 # Input the port number
 while True:
     try:
@@ -21,4 +48,8 @@ while True:
 server = Server(port, dir_path='server_directory')
 
 # Start the server
-pass
+if __name__ == '__main__':
+    server.accept()
+    while True:
+        req = server.receive()
+        handle_request(req)
