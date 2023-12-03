@@ -10,6 +10,7 @@ An instance of the Server must be running before any Client can connect.
 
 import socket
 import threading
+import os
 
 
 class Server:
@@ -25,7 +26,7 @@ class Server:
     # Store the current connections
     connections = []
 
-    def __init__(self, port):
+    def __init__(self, port, dir_path):
         # Create a socket
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -34,3 +35,7 @@ class Server:
 
         # Listen for connections
         self.socket.listen(5)
+
+        # Create server directory if it does not exist
+        os.makedirs(dir_path, exist_ok=True)
+        self.dir_path = dir_path
