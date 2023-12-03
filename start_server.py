@@ -36,6 +36,7 @@ def handle_request(req_string):
             print('Invalid request')
             server.send('Invalid request'.encode())
 
+
 # Input the port number
 while True:
     try:

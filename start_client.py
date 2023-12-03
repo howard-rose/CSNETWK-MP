@@ -130,8 +130,7 @@ def main():
 
         # Split the command into a list of arguments.
         args = command.split()
-        command = args[0]
-        args = args[1:]
+        command, args = args[0], args[1:]
 
         # Break if the command is 'exit'
         if command == 'exit':
