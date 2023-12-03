@@ -27,13 +27,14 @@ class Client:
     connection = None
     filepath = None
 
-    def __init__(self):
+    def __init__(self, filepath):
         # Create a client directory if it does not exist
         try:
-            mkdir('client_directory')
-            self.filepath = 'client_directory'
+            mkdir(filepath)
         except FileExistsError:
             pass
+
+        self.filepath = filepath
 
     def send(self, data):
         """

@@ -22,7 +22,7 @@ usages = {
 }
 
 # Instantiate the client
-client = Client()
+client = Client(filepath='client_directory')
 
 
 # Implement running commands
