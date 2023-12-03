@@ -9,7 +9,7 @@ An instance of the Server must be running before any Client can connect.
 """
 
 import socket
-from os import mkdir
+from os import makedirs
 
 
 class Client:
@@ -29,10 +29,7 @@ class Client:
 
     def __init__(self, filepath):
         # Create a client directory if it does not exist
-        try:
-            mkdir(filepath)
-        except FileExistsError:
-            pass
+        makedirs(filepath, exist_ok=True)
 
         self.filepath = filepath
 
