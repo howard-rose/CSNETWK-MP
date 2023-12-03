@@ -104,10 +104,7 @@ def run_command(command, args):
             print('File not found')
     elif command == 'dir':
         # Attempt to receive the file
-        try:
-            client.dir()
-        except FileNotFoundError:
-            print('File not found')
+        print(client.dir())
     else:
         print('Invalid command')
 

@@ -82,6 +82,8 @@ class Client:
         # Connect to the server
         self.connection.connect((host, port))
 
+        return True
+
     def leave(self):
         """
         This method closes the connection to the server.
@@ -183,4 +185,4 @@ class Client:
         self.send('DIR'.encode())
 
         # Receive the response
-        return self.receive()
+        return self.receive().decode()
