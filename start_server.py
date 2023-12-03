@@ -50,7 +50,12 @@ server = Server(port, dir_path='server_directory')
 
 # Start the server
 if __name__ == '__main__':
-    server.accept()
     while True:
-        req = server.receive()
-        handle_request(req)
+        server.accept()
+        while True:
+            req = server.receive()
+            if req == b'':
+                print('Client left, closing connection')
+                server.connection.close()
+                break
+            handle_request(req)
