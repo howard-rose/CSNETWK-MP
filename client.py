@@ -9,7 +9,7 @@ An instance of the Server must be running before any Client can connect.
 """
 
 import socket
-import threading
+from os import mkdir
 
 
 class Client:
@@ -25,6 +25,15 @@ class Client:
 
     # Store the current connection to the server
     connection = None
+    filepath = None
+
+    def __init__(self):
+        # Create a client directory if it does not exist
+        try:
+            mkdir('client_directory')
+            self.filepath = 'client_directory'
+        except FileExistsError:
+            pass
 
     def send(self, data):
         """
@@ -130,8 +139,8 @@ class Client:
             print('Not connected to any server')
             return False
 
-        # Open the file
-        file = open(filename, 'rb')
+        # Open the file in the client directory
+        file = open(f'{self.filepath}/{filename}', 'rb')
 
         # Send the file
         self.send(f'STORE {filename} {file.read()}'.encode())
@@ -151,7 +160,7 @@ class Client:
             return False
 
         # Open the file
-        file = open(filename, 'wb')
+        file = open(f'{self.filepath}/{filename}', 'wb')
 
         # Receive the file using self.get()
         file.write(self.receive_file(filename))
