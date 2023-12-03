@@ -36,6 +36,7 @@ class Server:
 
         # Listen for connections
         self.socket.listen(5)
+        print(f'Listening on port {port}')
 
         # Create server directory if it does not exist
         os.makedirs(dir_path, exist_ok=True)
@@ -49,6 +50,7 @@ class Server:
 
     def accept(self):
         self.connection, addr = self.socket.accept()
+        print(f'Connection from {addr}')
         return self.connection, addr
 
     def register(self, username):
