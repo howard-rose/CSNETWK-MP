@@ -38,7 +38,7 @@ def run_command(command, args):
         # Print usage message
         print('Usage: /<command> <args>')
         for command, usage in usages.items():
-            print('{}: /{}'.format(command, usage))
+            print(f'{command}: /{usage}')
     elif command == 'join':
         # Check if the number of arguments is correct
         if len(args) != 2:
@@ -52,7 +52,7 @@ def run_command(command, args):
                 return
 
             # Print success message with host and port
-            print('Connected to {} on port {}'.format(args[0], args[1]))
+            print(f'Connected to {args[0]} on port {args[1]}')
         except ConnectionRefusedError:
             print('Connection refused')
             client.connection = None
@@ -128,8 +128,7 @@ def main():
         # Remove the slash from the command
         command = command[1:]
 
-        # Split the command into a list of arguments, result must be a
-        # two-tuple (command, args). Use regex for whitespace splitting.
+        # Split the command into a list of arguments.
         args = command.split()
         command = args[0]
         args = args[1:]
