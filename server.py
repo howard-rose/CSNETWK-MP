@@ -9,7 +9,6 @@ An instance of the Server must be running before any Client can connect.
 """
 
 import socket
-import threading
 import os
 
 
@@ -24,8 +23,7 @@ class Server:
     """
 
     # Store the current connections
-    connections = []
-    connection = None
+    connections = {}
 
     def __init__(self, port, dir_path):
         # Create a socket
@@ -42,46 +40,47 @@ class Server:
         os.makedirs(dir_path, exist_ok=True)
         self.dir_path = dir_path
 
-    def send(self, data, buff_size=1024):
+    def send(self, conn, data, buff_size=1024):
         try:
             for i in range(0, len(data), buff_size):
-                self.connection.send(data[i:i + buff_size])
+                conn.send(data[i:i + buff_size])
         except ConnectionResetError:
             print('Connection was dead, closing connection')
-            self.connection.close()
+            conn.close()
             return
 
-    def receive(self, buff_size=1024):
+    def receive(self, conn, buff_size=1024):
         try:
-            buf = self.connection.recv(buff_size)
+            buf = conn.recv(buff_size)
             while buf:
                 yield buf
                 if len(buf) < buff_size:
                     break
-                buf = self.connection.recv(buff_size)
+                buf = conn.recv(buff_size)
         except ConnectionResetError:
-            self.connection.close()
+            conn.close()
             return
 
     def accept(self):
-        self.connection, addr = self.socket.accept()
+        conn, addr = self.socket.accept()
+        self.connections[addr] = conn
         print(f'Connection from {addr}')
-        return self.connection, addr
+        return addr
 
     def register(self, username):
         pass
 
-    def get(self, filename):
+    def get(self, addr, filename):
         try:
             with open(f'{self.dir_path}/{filename}', 'rb') as file:
-                self.send(file.read())
+                self.send(self.connections[addr], file.read())
         except FileNotFoundError:
-            self.send('ERROR: File not found'.encode())
+            self.send(self.connections[addr], 'ERROR: File not found'.encode())
 
     def store(self, filename, content):
         with open(f'{self.dir_path}/{filename}', 'wb') as file:
             file.write(content)
 
-    def dir(self):
+    def dir(self, addr):
         listdir = os.listdir(self.dir_path)
-        self.send(('\n'.join(listdir)).encode())
+        self.send(self.connections[addr], ('\n'.join(listdir)).encode())

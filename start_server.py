@@ -8,9 +8,9 @@ This file instantiates a Server object and starts it.
 """
 
 from server import Server
+import threading
 
-
-def handle_request(req_string):
+def handle_request(addr, req_string):
     # Server must handle the ff. request strings:
     # REGISTER {username}
     # GET {filename}
@@ -26,17 +26,26 @@ def handle_request(req_string):
 
     match req, args:
         case 'REGISTER', [username]:
-            server.register(username)
+            server.register(addr, username)
         case 'GET', [filename]:
-            server.get(filename)
+            server.get(addr, filename)
         case 'STORE', [filename]:
-            content = b''.join(server.receive())
+            content = b''.join(server.receive(server.connections[addr]))
             server.store(filename, content)
         case 'DIR', []:
-            server.dir()
+            server.dir(addr)
         case _:
             print('Invalid request')
             server.send('ERROR: Invalid request'.encode())
+
+def handle_client(addr):
+    while True:
+        req = b''.join(server.receive(server.connections[addr]))
+        if req == b'':
+            print('Client left, closing connection')
+            server.connections[addr].close()
+            break
+        handle_request(addr, req)
 
 
 # Input the port number
@@ -47,17 +56,11 @@ while True:
     except ValueError:
         print('Invalid port number.')
 
-# Instantiate the server
-server = Server(port, dir_path='server_directory')
-
-# Start the server
 if __name__ == '__main__':
+    # Instantiate the server
+    server = Server(port, dir_path='server_directory')
+
+    # Start the server
     while True:
-        server.accept()
-        while True:
-            req = b''.join(server.receive())
-            if req == b'':
-                print('Client left, closing connection')
-                server.connection.close()
-                break
-            handle_request(req)
+        addr = server.accept()
+        handle_client(addr)
