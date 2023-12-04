@@ -29,7 +29,8 @@ def handle_request(req_string):
             server.register(username)
         case 'GET', [filename]:
             server.get(filename)
-        case 'STORE', [filename, content]:
+        case 'STORE', [filename]:
+            content = b''.join(server.receive())
             server.store(filename, content)
         case 'DIR', []:
             server.dir()

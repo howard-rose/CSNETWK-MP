@@ -171,7 +171,8 @@ class Client:
         # Open the file in the client directory
         with open(f'{self.filepath}/{filename}', 'rb') as file:
             # Send the file
-            self.send(f'STORE {filename} '.encode() + file.read())
+            self.send(f'STORE {filename} '.encode())
+            self.send(file.read())
 
         print('File sent')
 
