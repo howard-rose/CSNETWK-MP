@@ -42,23 +42,21 @@ class Server:
         os.makedirs(dir_path, exist_ok=True)
         self.dir_path = dir_path
 
-    def send(self, data):
+    def send(self, data, buff_size=1024):
         try:
-            for i in range(0, len(data), 1024):
-                self.connection.send(data[i:i + 1024])
+            for i in range(0, len(data), buff_size):
+                self.connection.send(data[i:i + buff_size])
         except ConnectionResetError:
             print('Connection was dead, closing connection')
             self.connection.close()
             return
 
-    def receive(self):
-        buff_size = 1024
-
+    def receive(self, buff_size=1024):
         try:
             buf = self.connection.recv(buff_size)
             while buf:
                 yield buf
-                if len(buf) < 1024:
+                if len(buf) < buff_size:
                     break
                 buf = self.connection.recv(buff_size)
         except ConnectionResetError:

@@ -33,10 +33,11 @@ class Client:
 
         self.filepath = filepath
 
-    def send(self, data):
+    def send(self, data, buff_size=1024):
         """
         This method sends data to the server.
         :param data: The data to send to the server.
+        :param buff_size: The size of the buffer to use.
         :return: None
         """
         # Check if the client is connected to a server
@@ -46,17 +47,18 @@ class Client:
 
         # Send the data in chunks
         try:
-            for i in range(0, len(data), 1024):
-                self.connection.send(data[i:i + 1024])
+            for i in range(0, len(data), buff_size):
+                self.connection.send(data[i:i + buff_size])
         except ConnectionResetError:
             print('Connection was dead, closing connection')
             self.connection.close()
             self.connection = None
             return
 
-    def receive(self):
+    def receive(self, buff_size=1024):
         """
         This method receives data from the server.
+        :param buff_size: The size of the buffer to use.
         :return: The data received from the server.
         """
         # Check if the client is connected to a server
@@ -65,8 +67,6 @@ class Client:
             return False
 
         # Receive the data in buffers
-        buff_size = 1024
-
         try:
             buf = self.connection.recv(buff_size)
             while buf:
