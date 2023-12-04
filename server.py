@@ -75,13 +75,13 @@ class Server:
 
     def get(self, filename):
         try:
-            with open(f'{self.dir_path}/{filename.decode()}', 'rb') as file:
+            with open(f'{self.dir_path}/{filename}', 'rb') as file:
                 self.send(file.read())
         except FileNotFoundError:
-            self.send('File not found'.encode())
+            self.send('ERROR: File not found'.encode())
 
     def store(self, filename, content):
-        with open(f'{self.dir_path}/{filename.decode()}', 'wb') as file:
+        with open(f'{self.dir_path}/{filename}', 'wb') as file:
             file.write(content)
 
     def dir(self):

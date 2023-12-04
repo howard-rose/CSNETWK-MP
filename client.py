@@ -148,7 +148,14 @@ class Client:
         self.send(f'GET {filename}'.encode())
 
         # Receive the response
-        return self.receive()
+        res = b''.join(self.receive())
+
+        # Check if the file was found
+        if res == b'ERROR: File not found':
+            print('File not found')
+            return False
+
+        return res
 
     def store(self, filename):
         """
@@ -166,6 +173,8 @@ class Client:
             # Send the file
             self.send(f'STORE {filename} '.encode() + file.read())
 
+        print('File sent')
+
     def get(self, filename):
         """
         This method receives a file from the server.
@@ -177,10 +186,15 @@ class Client:
             print('Not connected to any server')
             return False
 
+        # Receive the file using self.receive_file()
+        file_bytes = self.receive_file(filename)
+
         # Open the file
-        with open(f'{self.filepath}/{filename}', 'wb') as file:
-            # Receive the file using self.receive_file()
-            file.write(self.receive_file(filename))
+        if file_bytes:
+            with open(f'{self.filepath}/{filename}', 'wb') as file:
+                file.write(file_bytes)
+                print('File received')
+
 
     def dir(self):
         """
@@ -196,4 +210,4 @@ class Client:
         self.send('DIR'.encode())
 
         # Receive the response
-        return self.receive().decode()
+        return b''.join(self.receive()).decode()

@@ -18,7 +18,8 @@ def handle_request(req_string):
     # DIR
 
     req_list = req_string.split()
-    req, args = req_list[0].decode(), req_list[1:]
+    req, args = (req_list[0].decode(), [req_list[1].decode(), b' '.join(req_list[2:])]
+                if len(req_list) > 2 else [req_list[1].decode()] if len(req_list) == 2 else [])
 
     print('=====')
     print('Received request:', req, args)
@@ -34,7 +35,7 @@ def handle_request(req_string):
             server.dir()
         case _:
             print('Invalid request')
-            server.send('Invalid request'.encode())
+            server.send('ERROR: Invalid request'.encode())
 
 
 # Input the port number
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     while True:
         server.accept()
         while True:
-            req = server.receive()
+            req = b''.join(server.receive())
             if req == b'':
                 print('Client left, closing connection')
                 server.connection.close()
