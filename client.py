@@ -44,8 +44,15 @@ class Client:
             print('Not connected to any server')
             return False
 
-        # Send the data
-        self.connection.send(data)
+        # Send the data in chunks
+        try:
+            for i in range(0, len(data), 1024):
+                self.connection.send(data[i:i + 1024])
+        except ConnectionResetError:
+            print('Connection was dead, closing connection')
+            self.connection.close()
+            self.connection = None
+            return
 
     def receive(self):
         """
@@ -57,8 +64,21 @@ class Client:
             print('Not connected to any server')
             return False
 
-        # Receive the data
-        return self.connection.recv(1024)
+        # Receive the data in buffers
+        buff_size = 1024
+
+        try:
+            buf = self.connection.recv(buff_size)
+            while buf:
+                yield buf
+                if len(buf) < buff_size:
+                    break
+                buf = self.connection.recv(buff_size)
+        except ConnectionResetError:
+            print('Server left, closing connection')
+            self.connection.close()
+            self.connection = None
+            return
 
     def join(self, host, port, blocking=True):
         """
@@ -142,13 +162,9 @@ class Client:
             return False
 
         # Open the file in the client directory
-        file = open(f'{self.filepath}/{filename}', 'rb')
-
-        # Send the file
-        self.send(f'STORE {filename} '.encode() + file.read())
-
-        # Close the file
-        file.close()
+        with open(f'{self.filepath}/{filename}', 'rb') as file:
+            # Send the file
+            self.send(f'STORE {filename} '.encode() + file.read())
 
     def get(self, filename):
         """
@@ -162,13 +178,9 @@ class Client:
             return False
 
         # Open the file
-        file = open(f'{self.filepath}/{filename}', 'wb')
-
-        # Receive the file using self.get()
-        file.write(self.receive_file(filename))
-
-        # Close the file
-        file.close()
+        with open(f'{self.filepath}/{filename}', 'wb') as file:
+            # Receive the file using self.receive_file()
+            file.write(self.receive_file(filename))
 
     def dir(self):
         """

@@ -43,10 +43,27 @@ class Server:
         self.dir_path = dir_path
 
     def send(self, data):
-        self.connection.send(data)
+        try:
+            for i in range(0, len(data), 1024):
+                self.connection.send(data[i:i + 1024])
+        except ConnectionResetError:
+            print('Connection was dead, closing connection')
+            self.connection.close()
+            return
 
     def receive(self):
-        return self.connection.recv(1024)
+        buff_size = 1024
+
+        try:
+            buf = self.connection.recv(buff_size)
+            while buf:
+                yield buf
+                if len(buf) < 1024:
+                    break
+                buf = self.connection.recv(buff_size)
+        except ConnectionResetError:
+            self.connection.close()
+            return
 
     def accept(self):
         self.connection, addr = self.socket.accept()
