@@ -23,7 +23,7 @@ def handle_request(addr, req_string):
                 if len(req_list) > 2 else [req_list[1].decode()] if len(req_list) == 2 else [])
 
     print('=====')
-    print('Received request:', req, args)
+    print(f'Received request from {addr}: {req} {args}')
 
     match req, args:
         case 'REGISTER', [username]:
@@ -48,7 +48,7 @@ def handle_client(addr):
     while True:
         req = b''.join(server.receive(server.connections[addr]))
         if req == b'':
-            print('Client left, closing connection')
+            print(f'Client {addr} left, closing connection')
             server.connections[addr].close()
             break
         handle_request(addr, req)
@@ -66,7 +66,22 @@ if __name__ == '__main__':
     # Instantiate the server
     server = Server(port, dir_path='server_directory')
 
-    # Accept client connections
-    while True:
-        addr = server.accept()
-        handle_client(addr)
+    # Track all threads
+    threads = []
+
+    try:
+        while True:
+            # Accept client connections
+            addr = server.accept()
+
+            # Start new thread
+            t = threading.Thread(target=handle_client, args=(addr,))
+            t.start()
+
+            threads.append(t)
+    except KeyboardInterrupt:
+        print('KeyboardInterrupt')
+    finally:
+        # TODO: Close all client connections
+        for t in threads:
+            t.join()
