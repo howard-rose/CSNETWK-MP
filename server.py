@@ -70,17 +70,18 @@ class Server:
     def register(self, username):
         pass
 
-    def get(self, addr, filename):
+    def get(self, filename):
         try:
             with open(f'{self.dir_path}/{filename}', 'rb') as file:
-                self.send(self.connections[addr], file.read())
+                return file.read()
         except FileNotFoundError:
-            self.send(self.connections[addr], 'ERROR: File not found'.encode())
+            return 'ERROR: File not found'.encode()
 
     def store(self, filename, content):
+        # TODO: Catch possible errors?
         with open(f'{self.dir_path}/{filename}', 'wb') as file:
             file.write(content)
 
-    def dir(self, addr):
+    def dir(self):
         listdir = os.listdir(self.dir_path)
-        self.send(self.connections[addr], ('\n'.join(listdir)).encode())
+        return ('\n'.join(listdir)).encode()

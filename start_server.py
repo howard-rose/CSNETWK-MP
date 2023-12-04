@@ -26,14 +26,18 @@ def handle_request(addr, req_string):
 
     match req, args:
         case 'REGISTER', [username]:
-            server.register(addr, username)
+            res = server.register(username)
+            server.send(server.connections[addr], res)
         case 'GET', [filename]:
-            server.get(addr, filename)
+            res = server.get(filename)
+            server.send(server.connections[addr], res)
         case 'STORE', [filename]:
+            # TODO: Maybe send response to server?
             content = b''.join(server.receive(server.connections[addr]))
             server.store(filename, content)
         case 'DIR', []:
-            server.dir(addr)
+            res = server.dir()
+            server.send(server.connections[addr], res)
         case _:
             print('Invalid request')
             server.send('ERROR: Invalid request'.encode())
