@@ -10,6 +10,7 @@ This file instantiates a Server object and starts it.
 from server import Server
 import threading
 
+
 def handle_request(addr, req_string):
     # Server must handle the ff. request strings:
     # REGISTER {username}
@@ -42,6 +43,7 @@ def handle_request(addr, req_string):
             print('Invalid request')
             server.send('ERROR: Invalid request'.encode())
 
+
 def handle_client(addr):
     while True:
         req = b''.join(server.receive(server.connections[addr]))
@@ -52,19 +54,19 @@ def handle_client(addr):
         handle_request(addr, req)
 
 
-# Input the port number
-while True:
-    try:
-        port = int(input('Enter the port number: '))
-        break
-    except ValueError:
-        print('Invalid port number.')
-
 if __name__ == '__main__':
+    # Input the port number
+    while True:
+        try:
+            port = int(input('Enter the port number: '))
+            break
+        except ValueError:
+            print('Invalid port number.')
+
     # Instantiate the server
     server = Server(port, dir_path='server_directory')
 
-    # Start the server
+    # Accept client connections
     while True:
         addr = server.accept()
         handle_client(addr)
