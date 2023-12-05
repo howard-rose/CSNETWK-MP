@@ -134,11 +134,10 @@ class Client:
         self.send(f'REGISTER {username}'.encode())
 
         # Receive the response
-        res = b''.join(self.receive())
+        res = b''.join(self.receive()).decode()
 
-        print(res.decode())
-
-        if res == b'ERROR: Username already exists' or res == b'ERROR: Client already has registered username':
+        print(res)
+        if res.startswith('ERROR:'):
             return False
 
         return res
@@ -160,9 +159,8 @@ class Client:
         # Receive the response
         res = b''.join(self.receive())
 
-        # Check if the file was found
-        if res == b'ERROR: File not found':
-            print('Error: File not found')
+        print(res.decode())
+        if res.decode().startswith('ERROR:'):
             return False
 
         return res
@@ -220,4 +218,10 @@ class Client:
         self.send('DIR'.encode())
 
         # Receive the response
-        return b''.join(self.receive()).decode()
+        res = b''.join(self.receive()).decode()
+
+        print(res)
+        if res.startswith('ERROR:'):
+            return False
+
+        return res

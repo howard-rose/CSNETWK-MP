@@ -81,7 +81,6 @@ def run_command(command, args):
         # Attempt to register the client
         try:
             client.register(args[0])
-            print(f'Welcome {args[0]}!')
         except TypeError:
             print('Error: Invalid handle')
     elif command == 'store':
