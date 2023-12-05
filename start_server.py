@@ -25,6 +25,16 @@ def handle_request(addr, req_string):
     print('=====')
     print(f'Received request from {addr}: {req} {args}')
 
+    # Check if already registered
+    if req != 'REGISTER' and not server.is_registered(addr):
+        res = 'ERROR: Client has not registered username'.encode()
+        server.send(server.connections[addr], res)
+        return
+    elif req == 'REGISTER' and server.is_registered(addr):
+        res = f'ERROR: You are already registered as {server.usernames[addr]}'.encode()
+        server.send(server.connections[addr], res)
+        return
+
     match req, args:
         case 'REGISTER', [username]:
             res = server.register(addr, username)
