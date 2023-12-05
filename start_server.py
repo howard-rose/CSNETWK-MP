@@ -41,7 +41,7 @@ def handle_request(addr, req_string):
             server.send(server.connections[addr], res)
         case _:
             print('Invalid request')
-            server.send('ERROR: Invalid request'.encode())
+            server.send(server.connections[addr], 'ERROR: Invalid request'.encode())
 
 
 def handle_client(addr):
