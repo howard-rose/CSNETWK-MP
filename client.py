@@ -99,6 +99,21 @@ class Client:
         # Connect to the server
         self.connection.connect((host, port))
 
+        # Test if connection is successful
+        try:
+            self.connection.send('HELLO'.encode())
+            res = b''.join(self.receive())
+            if res != b'HELLO':
+                print('Error: Invalid response from server')
+                self.connection.close()
+                self.connection = None
+                return False
+        except ConnectionResetError:
+            print('Error: Connection refused')
+            self.connection.close()
+            self.connection = None
+            return False
+
         return True
 
     def leave(self):

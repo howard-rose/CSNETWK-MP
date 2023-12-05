@@ -85,6 +85,15 @@ if __name__ == '__main__':
             # Accept client connections
             addr = server.accept()
 
+            # Receive HELLO message
+            req = b''.join(server.receive(server.connections[addr]))
+            if req != b'HELLO':
+                print('Invalid request')
+                server.send(server.connections[addr], 'ERROR: Invalid request'.encode())
+                continue
+            else:
+                server.send(server.connections[addr], 'HELLO'.encode())
+
             # Start new thread
             t = threading.Thread(target=handle_client, args=(addr,))
             t.start()
