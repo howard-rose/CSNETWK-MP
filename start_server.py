@@ -27,7 +27,7 @@ def handle_request(addr, req_string):
 
     match req, args:
         case 'REGISTER', [username]:
-            res = server.register(username)
+            res = server.register(addr, username)
             server.send(server.connections[addr], res)
         case 'GET', [filename]:
             res = server.get(filename)
@@ -50,6 +50,7 @@ def handle_client(addr):
         if req == b'':
             print(f'Client {addr} left, closing connection')
             server.connections[addr].close()
+            # TODO: remove username from dict if exists
             break
         handle_request(addr, req)
 

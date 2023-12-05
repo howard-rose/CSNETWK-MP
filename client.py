@@ -133,6 +133,16 @@ class Client:
         # Send the username
         self.send(f'REGISTER {username}'.encode())
 
+        # Receive the response
+        res = b''.join(self.receive())
+
+        print(res.decode())
+
+        if res == b'ERROR: Username already exists' or res == b'ERROR: Client already has registered username':
+            return False
+
+        return res
+
     def receive_file(self, filename):
         """
         This method requests a file from the server.

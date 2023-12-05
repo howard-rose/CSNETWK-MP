@@ -22,9 +22,6 @@ class Server:
     :param port: The port number to listen to.
     """
 
-    # Store the current connections
-    connections = {}
-
     def __init__(self, port, dir_path):
         # Create a socket
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,6 +36,12 @@ class Server:
         # Create server directory if it does not exist
         os.makedirs(dir_path, exist_ok=True)
         self.dir_path = dir_path
+
+        # Store the current connections
+        self.connections = {}
+
+        # Store the registered usernames
+        self.usernames = {}
 
     def send(self, conn, data, buff_size=1024):
         try:
@@ -67,8 +70,14 @@ class Server:
         print(f'Connection from {addr}')
         return addr
 
-    def register(self, username):
-        pass
+    def register(self, addr, username):
+        if username in self.usernames.values():
+            return 'ERROR: Username already exists'.encode()
+        elif addr in self.usernames:
+            return 'ERROR: Client already has registered username'.encode()
+
+        self.usernames[addr] = username
+        return f'Welcome {username}!'.encode()
 
     def get(self, filename):
         try:
