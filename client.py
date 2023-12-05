@@ -235,7 +235,6 @@ class Client:
         # Receive the response
         res = b''.join(self.receive()).decode()
 
-        print(res)
         if res.startswith('ERROR:'):
             return False
 
