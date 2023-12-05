@@ -52,15 +52,18 @@ def run_command(command, args):
                 return
 
             # Print success message with host and port
-            print(f'Connected to {args[0]} on port {args[1]}')
+            print(f'Connection to the File Exchange Server is successful!')
         except ConnectionRefusedError:
-            print('Connection refused')
+            print('Error: Connection refused')
             client.connection = None
         except TimeoutError:
-            print('Connection timed out')
+            print('Error: Connection timed out')
+            client.connection = None
+        except ValueError:
+            print('Error: Invalid port')
             client.connection = None
         except gaierror:
-            print('Invalid host')
+            print('Error: Invalid host')
             client.connection = None
     elif command == 'leave':
         result = client.leave()
@@ -68,7 +71,7 @@ def run_command(command, args):
             return
 
         # Print success message
-        print('Disconnected from server')
+        print('Connection closed. Thank you!')
     elif command == 'register':
         # Check if the number of arguments is correct
         if len(args) != 1:
@@ -78,8 +81,9 @@ def run_command(command, args):
         # Attempt to register the client
         try:
             client.register(args[0])
+            print(f'Welcome {args[0]}!')
         except TypeError:
-            print('Invalid handle')
+            print('Error: Invalid handle')
     elif command == 'store':
         # Check if the number of arguments is correct
         if len(args) != 1:
@@ -90,7 +94,7 @@ def run_command(command, args):
         try:
             client.store(args[0])
         except FileNotFoundError:
-            print('File not found')
+            print('Error: File not found')
     elif command == 'get':
         # Check if the number of arguments is correct
         if len(args) != 1:
@@ -101,16 +105,16 @@ def run_command(command, args):
         try:
             client.get(args[0])
         except FileNotFoundError:
-            print('File not found')
+            print('Error: File not found in the server')
     elif command == 'dir':
-        result = client.dir()
-        if not result:
-            return
+        # Attempt to receive the file
+        server_dir = client.dir()
 
-        # Print received directory file list
-        print(result)
+        if server_dir:
+            print('--- Server Directory ---')
+            print(server_dir)
     else:
-        print('Invalid command')
+        print('Error: Invalid command')
 
 
 def main():

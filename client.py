@@ -42,7 +42,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Send the data in chunks
@@ -50,7 +50,7 @@ class Client:
             for i in range(0, len(data), buff_size):
                 self.connection.send(data[i:i + buff_size])
         except ConnectionResetError:
-            print('Connection was dead, closing connection')
+            print('Error: Connection was dead, closing connection')
             self.connection.close()
             self.connection = None
             return
@@ -63,7 +63,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Receive the data in buffers
@@ -75,7 +75,7 @@ class Client:
                     break
                 buf = self.connection.recv(buff_size)
         except ConnectionResetError:
-            print('Server left, closing connection')
+            print('Error: Server left, closing connection')
             self.connection.close()
             self.connection = None
             return
@@ -90,7 +90,7 @@ class Client:
         """
         # Warn if already connected to a server
         if self.connection is not None:
-            print('Already connected to a server')
+            print('Error: Already connected to a server')
             return False
 
         self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -108,7 +108,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Close the connection
@@ -127,7 +127,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Send the username
@@ -151,7 +151,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Send the request
@@ -162,7 +162,7 @@ class Client:
 
         # Check if the file was found
         if res == b'ERROR: File not found':
-            print('File not found')
+            print('Error: File not found')
             return False
 
         return res
@@ -175,7 +175,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Open the file in the client directory
@@ -184,7 +184,7 @@ class Client:
             self.send(f'STORE {filename} '.encode())
             self.send(file.read())
 
-        print('File sent')
+        print(f'File sent: {filename}')
 
     def get(self, filename):
         """
@@ -194,7 +194,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Receive the file using self.receive_file()
@@ -204,8 +204,7 @@ class Client:
         if file_bytes:
             with open(f'{self.filepath}/{filename}', 'wb') as file:
                 file.write(file_bytes)
-                print('File received')
-
+                print(f'File received from server: {filename}')
 
     def dir(self):
         """
@@ -214,7 +213,7 @@ class Client:
         """
         # Check if the client is connected to a server
         if self.connection is None:
-            print('Not connected to any server')
+            print('Error: Not connected to any server')
             return False
 
         # Send the request
