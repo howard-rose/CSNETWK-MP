@@ -159,8 +159,8 @@ class Client:
         # Receive the response
         res = b''.join(self.receive())
 
-        print(res.decode())
-        if res.decode().startswith('ERROR:'):
+        if res.startswith(b'ERROR:'):
+            print(res.decode())
             return False
 
         return res
